@@ -45,3 +45,4 @@ database.db
 
 docker-compose.override.yml
 .docker/ 
+/src/generated/prisma

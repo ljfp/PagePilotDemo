@@ -11,7 +11,10 @@
     "test": "vitest",
     "test:watch": "vitest --watch",
     "lint": "eslint 'src/**/*.ts'",
-    "lint:fix": "eslint 'src/**/*.ts' --fix"
+    "lint:fix": "eslint 'src/**/*.ts' --fix",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:migrate": "prisma migrate dev"
   },
   "keywords": [
     "bookstore",
@@ -19,11 +22,13 @@
     "typescript",
     "fastify"
   ],
-  "author": "PagePilot Team",
+  "author": "LJFP",
   "license": "MIT",
   "dependencies": {
+    "@prisma/client": "^5.22.0",
     "fastify": "^5.1.0",
-    "pino-pretty": "^13.0.0",
+    "pino-pretty": "^11.0.0",
+    "prisma": "^5.22.0",
     "uuid": "^9.0.1"
   },
   "devDependencies": {
@@ -39,4 +44,4 @@
   "engines": {
     "node": ">=18.0.0"
   }
-}
+} 
