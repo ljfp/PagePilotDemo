@@ -89,6 +89,44 @@ export async function startServer(port: number, host: string): Promise<void> {
     return { status: 'ok', message: 'PagePilot Backend is running!' };
   });
 
+  server.get('/', {
+    schema: {
+      tags: ['health'],
+      summary: 'API information',
+      description: 'Returns basic information about the PagePilot API',
+      response: {
+        200: {
+          description: 'API information retrieved successfully',
+          type: 'object',
+          properties: {
+            success: { type: 'boolean', enum: [true] },
+            data: {
+              type: 'object',
+              properties: {
+                service: { type: 'string' },
+                version: { type: 'string' },
+                description: { type: 'string' }
+              },
+              required: ['service', 'version', 'description']
+            },
+            message: { type: 'string' }
+          },
+          required: ['success', 'data', 'message']
+        }
+      }
+    }
+  }, async () => {
+    return {
+      success: true,
+      data: {
+        service: 'PagePilot Backend',
+        version: '1.0.0',
+        description: 'RESTful API for managing bookstore inventory'
+      },
+      message: 'Welcome to PagePilot Backend API'
+    };
+  });
+
   await server.register(authorRoutes);
   await server.register(bookRoutes);
   await server.register(authenticationRoutes);
