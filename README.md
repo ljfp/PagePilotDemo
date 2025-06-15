@@ -26,7 +26,7 @@ This backend service provides REST API endpoints for managing books, authors, an
 
 ### Prerequisites
 
-- Node.js 18+
+- Node.js 20+
 - npm or yarn
 
 ### Installation
@@ -110,8 +110,9 @@ npm run dev
 ```
 
 The server will start on `http://localhost:3000` with:
-- 📊 Health check: `http://localhost:3000/health`
-- 📚 API Documentation: `http://localhost:3000/docs`
+- Welcome message" `http://localhost:3000/`
+- Health check: `http://localhost:3000/health`
+- API Documentation: `http://localhost:3000/docs`
 
 ### Testing
 
@@ -135,7 +136,8 @@ npm start
 
 ### Prerequisites
 
-- Docker and Docker Compose installed
+- Docker-engine installed
+- Docker daemon must be running
 
 ### Quick Start with Docker
 
@@ -162,7 +164,7 @@ npm run docker:run
 
 ### Docker Services
 
-When using `docker-compose up`, the following services are available:
+When using `docker compose up`, the following services are available:
 
 - **API Server**: `http://localhost:3000`
   - Health check: `http://localhost:3000/health`
@@ -273,17 +275,6 @@ scripts/             # Utility scripts (seeding, verification)
 - `npm run docker:up` - Start Docker Compose services
 - `npm run docker:down` - Stop Docker Compose services
 - `npm run docker:logs` - View Docker container logs
-
-## Tech Stack
-
-- **Runtime**: Node.js 18+
-- **Language**: TypeScript with strict configuration
-- **Web Framework**: Fastify for high performance
-- **Database**: SQLite with Prisma ORM
-- **Testing**: Vitest with comprehensive test coverage
-- **Documentation**: OpenAPI 3.0 with Swagger UI
-- **Validation**: Custom validation utilities
-- **Logging**: Pino for structured logging
 
 ## Development
 
