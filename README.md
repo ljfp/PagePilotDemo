@@ -10,17 +10,17 @@ This backend service provides REST API endpoints for managing books, authors, an
 
 ## Features
 
-- ✅ CRUD operations for Books and Authors
-- ✅ Link Books to Authors (many-to-one relationship)  
-- ✅ Fetch all books by a specific author
-- ✅ RESTful API design with proper HTTP status codes
-- ✅ TypeScript implementation with strict type checking
-- ✅ Fastify web framework for high performance
-- ✅ Prisma ORM with SQLite database
-- ✅ Input validation for all endpoints
-- ✅ Comprehensive test suite with Vitest
-- ✅ OpenAPI/Swagger documentation
-- ✅ Structured logging with Pino
+- CRUD operations for Books and Authors
+- Link Books to Authors (many-to-one relationship)  
+- Fetch all books by a specific author
+- RESTful API design with proper HTTP status codes
+- TypeScript implementation with strict type checking
+- Fastify web framework for high performance
+- Prisma ORM with SQLite database
+- Input validation for all endpoints
+- Comprehensive test suite with Vitest
+- OpenAPI/Swagger documentation
+- Structured logging with Pino
 
 ## Quick Start
 
