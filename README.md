@@ -35,6 +35,42 @@ This backend service provides REST API endpoints for managing books, authors, an
 npm install
 ```
 
+### Environment Configuration
+
+Copy the example environment file and configure it:
+
+```bash
+cp .env.example .env
+```
+
+Edit the `.env` file with your configuration:
+
+```bash
+# Required: Database URL (SQLite for local development)
+DATABASE_URL="file:./dev.db"
+
+# Required: JWT Secret (generate a secure random string)
+JWT_SECRET="your-super-secret-jwt-key-change-this-in-production"
+
+# Optional: Server configuration
+PORT=3000
+HOST=0.0.0.0
+```
+
+**Important**: 
+- For production, generate a secure JWT secret using: `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`
+- Never commit your `.env` file to version control
+
+### Verify Setup
+
+Check if your environment is properly configured:
+
+```bash
+npm run setup:verify
+```
+
+This will verify that all required environment variables are set and dependencies are installed.
+
 ### Database Setup
 
 ```bash
@@ -211,6 +247,9 @@ src/
 
 tests/               # Test files
 prisma/              # Database schema and migrations
+scripts/             # Utility scripts (seeding, verification)
+.env.example         # Environment variables template
+.env                 # Environment variables (not in git)
 ```
 
 ## Scripts
@@ -228,6 +267,7 @@ prisma/              # Database schema and migrations
 - `npm run db:seed` - Populate database with sample data
 - `npm run db:reset` - Reset database and reseed with sample data
 - `npm run db:verify` - Verify seeded data structure
+- `npm run setup:verify` - Verify environment and setup configuration
 - `npm run docker:build` - Build Docker image
 - `npm run docker:run` - Run Docker container
 - `npm run docker:up` - Start Docker Compose services
@@ -254,9 +294,49 @@ The project follows a layered architecture:
 3. **Services**: Implement business logic and database operations
 4. **Database**: Prisma-managed data layer
 
+### Environment Variables
+
+The application uses the following environment variables:
+
+- `DATABASE_URL` - Database connection string (required)
+- `JWT_SECRET` - Secret key for JWT token signing (required)
+- `PORT` - Server port (default: 3000)
+- `HOST` - Server host (default: 0.0.0.0)
+- `LOG_LEVEL` - Logging level (default: info)
+
 All endpoints include:
 - Input validation with detailed error messages
 - Proper HTTP status codes
 - Consistent JSON response format
 - OpenAPI documentation
-- Comprehensive test coverage 
+- Comprehensive test coverage
+
+## Troubleshooting
+
+### Common Issues
+
+**"Cannot find module" errors**
+```bash
+# Regenerate Prisma client
+npm run db:generate
+```
+
+**Database connection errors**
+```bash
+# Ensure .env file exists and DATABASE_URL is set
+cp .env.example .env
+# Edit .env with correct DATABASE_URL
+```
+
+**JWT errors in authentication endpoints**
+```bash
+# Generate a secure JWT secret
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+# Add the generated secret to your .env file as JWT_SECRET
+```
+
+**Port already in use**
+```bash
+# Change PORT in .env file or kill existing process
+lsof -ti:3000 | xargs kill -9
+``` 

@@ -18,6 +18,7 @@
     "db:seed": "tsx prisma/seed.ts",
     "db:reset": "prisma migrate reset --force && npm run db:seed",
     "db:verify": "tsx scripts/verify-seed.ts",
+    "setup:verify": "node scripts/verify-setup.js",
     "docker:build": "docker build -t pagepilot-backend .",
     "docker:run": "docker run -p 3000:3000 --env-file .env pagepilot-backend",
     "docker:up": "docker compose up -d",
