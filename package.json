@@ -17,7 +17,12 @@
     "db:migrate": "prisma migrate dev",
     "db:seed": "tsx prisma/seed.ts",
     "db:reset": "prisma migrate reset --force && npm run db:seed",
-    "db:verify": "tsx scripts/verify-seed.ts"
+    "db:verify": "tsx scripts/verify-seed.ts",
+    "docker:build": "docker build -t pagepilot-backend .",
+    "docker:run": "docker run -p 3000:3000 --env-file .env pagepilot-backend",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down",
+    "docker:logs": "docker compose logs -f api"
   },
   "keywords": [
     "bookstore",

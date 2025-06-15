@@ -146,4 +146,4 @@ export async function startServer(port: number, host: string): Promise<void> {
     server.log.error(error);
     throw error;
   }
-} 
+}

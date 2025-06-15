@@ -95,6 +95,55 @@ npm run build
 npm start
 ```
 
+## Docker Deployment
+
+### Prerequisites
+
+- Docker and Docker Compose installed
+
+### Quick Start with Docker
+
+```bash
+# Build and start the application
+npm run docker:up
+
+# View logs
+npm run docker:logs
+
+# Stop the application
+npm run docker:down
+```
+
+### Manual Docker Commands
+
+```bash
+# Build the Docker image
+npm run docker:build
+
+# Run a single container
+npm run docker:run
+```
+
+### Docker Services
+
+When using `docker-compose up`, the following services are available:
+
+- **API Server**: `http://localhost:3000`
+  - Health check: `http://localhost:3000/health`
+  - API documentation: `http://localhost:3000/docs`
+- **SQLite Web UI**: `http://localhost:8080` (optional database viewer)
+
+### Production Environment
+
+Copy `.env.production` to `.env.production.local` and update the values:
+
+```bash
+cp .env.production .env.production.local
+# Edit .env.production.local with your production values
+```
+
+**Important**: Change the `JWT_SECRET` in production!
+
 ## API Endpoints
 
 ### Health
@@ -179,6 +228,11 @@ prisma/              # Database schema and migrations
 - `npm run db:seed` - Populate database with sample data
 - `npm run db:reset` - Reset database and reseed with sample data
 - `npm run db:verify` - Verify seeded data structure
+- `npm run docker:build` - Build Docker image
+- `npm run docker:run` - Run Docker container
+- `npm run docker:up` - Start Docker Compose services
+- `npm run docker:down` - Stop Docker Compose services
+- `npm run docker:logs` - View Docker container logs
 
 ## Tech Stack
 
