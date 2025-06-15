@@ -173,14 +173,18 @@ When using `docker compose up`, the following services are available:
 
 ### Production Environment
 
-Copy `.env.production` to `.env.production.local` and update the values:
+For production deployment, create a production environment file:
 
 ```bash
-cp .env.production .env.production.local
+cp .env.example .env.production.local
 # Edit .env.production.local with your production values
 ```
 
-**Important**: Change the `JWT_SECRET` in production!
+**Important Production Settings**:
+- Generate a secure JWT secret: `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`
+- Use a production database (PostgreSQL recommended)
+- Set appropriate `LOG_LEVEL` (warn or error)
+- Never commit `.env.production.local` to version control
 
 ## API Endpoints
 
