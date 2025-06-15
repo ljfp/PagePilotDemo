@@ -1,5 +1,6 @@
 import Fastify from 'fastify';
 import { connectDatabase, disconnectDatabase } from './database/client.js';
+import { authorRoutes } from './routes/authorRoutes.js';
 
 export async function startServer(port: number, host: string): Promise<void> {
   const server = Fastify({
@@ -19,6 +20,8 @@ export async function startServer(port: number, host: string): Promise<void> {
   server.get('/health', async () => {
     return { status: 'ok', message: 'PagePilot Backend is running!' };
   });
+
+  await server.register(authorRoutes);
 
   server.addHook('onClose', async () => {
     await disconnectDatabase();
