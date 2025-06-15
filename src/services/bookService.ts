@@ -57,4 +57,6 @@ export class BookService {
     });
     return book !== null;
   }
-} 
+}
+
+export const bookService = new BookService(); 

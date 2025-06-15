@@ -11,6 +11,19 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  favorites Favorite[]
+  
+  @@map("users")
+}
+
 model Author {
   id        String   @id @default(cuid())
   name      String
@@ -34,6 +47,20 @@ model Book {
   updatedAt       DateTime @updatedAt
   
   author Author @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  favorites Favorite[]
   
   @@map("books")
+}
+
+model Favorite {
+  id     String @id @default(cuid())
+  userId String
+  bookId String
+  createdAt DateTime @default(now())
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  book Book @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, bookId])
+  @@map("favorites")
 }

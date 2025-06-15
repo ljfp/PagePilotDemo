@@ -45,4 +45,6 @@ export class AuthorService {
     });
     return author !== null;
   }
-} 
+}
+
+export const authorService = new AuthorService(); 

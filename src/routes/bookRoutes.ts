@@ -180,6 +180,6 @@ export async function bookRoutes(fastify: FastifyInstance): Promise<void> {
         },
       },
     },
-    handler: bookController.getBooksByAuthor.bind(bookController),
+    handler: bookController.getBooksByAuthorId.bind(bookController),
   });
 } 

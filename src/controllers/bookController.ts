@@ -1,204 +1,84 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
-import { BookService } from '../services/bookService.js';
-import { AuthorService } from '../services/authorService.js';
-import { CreateBookRequest, UpdateBookRequest, ApiResponse } from '../types/index.js';
-import { validateCreateBook, validateUpdateBook, validateId } from '../utils/validation.js';
-
-const bookService = new BookService();
-const authorService = new AuthorService();
+import { bookService } from '../services/bookService.js';
+import { ApiSuccess, HttpStatus, CreateBookRequest, UpdateBookRequest } from '../types/index.js';
 
 export class BookController {
-  async createBook(
-    request: FastifyRequest<{ Body: CreateBookRequest }>,
-    reply: FastifyReply
-  ): Promise<void> {
-    try {
-      const validationErrors = validateCreateBook(request.body);
-      if (validationErrors.length > 0) {
-        reply.code(400).send({
-          success: false,
-          error: 'Validation failed',
-          details: validationErrors,
-        });
-        return;
-      }
-
-      const authorExists = await authorService.authorExists(request.body.authorId);
-      if (!authorExists) {
-        reply.code(400).send({
-          success: false,
-          error: 'Author not found',
-        } as ApiResponse<never>);
-        return;
-      }
-
-      const book = await bookService.createBook(request.body);
-      reply.code(201).send({
-        success: true,
-        data: book,
-      } as ApiResponse<typeof book>);
-    } catch (error) {
-      reply.code(500).send({
-        success: false,
-        error: 'Failed to create book',
-      } as ApiResponse<never>);
-    }
+  async createBook(request: FastifyRequest, reply: FastifyReply): Promise<void> {
+    const book = await bookService.createBook(request.body as unknown as CreateBookRequest);
+    
+    const response: ApiSuccess<typeof book> = {
+      success: true,
+      data: book,
+      message: 'Book created successfully'
+    };
+    
+    reply.status(HttpStatus.CREATED).send(response);
   }
 
-  async getAllBooks(
-    request: FastifyRequest,
-    reply: FastifyReply
-  ): Promise<void> {
-    try {
-      const books = await bookService.getAllBooks();
-      reply.send({
-        success: true,
-        data: books,
-      } as ApiResponse<typeof books>);
-    } catch (error) {
-      reply.code(500).send({
-        success: false,
-        error: 'Failed to fetch books',
-      } as ApiResponse<never>);
-    }
+  async getAllBooks(_request: FastifyRequest, reply: FastifyReply): Promise<void> {
+    const books = await bookService.getAllBooks();
+    
+    const response: ApiSuccess<typeof books> = {
+      success: true,
+      data: books,
+      message: books.length === 0 ? 'No books found' : 'Books retrieved successfully'
+    };
+    
+    reply.status(HttpStatus.OK).send(response);
   }
 
-  async getBookById(
-    request: FastifyRequest<{ Params: { id: string } }>,
-    reply: FastifyReply
-  ): Promise<void> {
-    try {
-      const validationErrors = validateId(request.params.id);
-      if (validationErrors.length > 0) {
-        reply.code(400).send({
-          success: false,
-          error: 'Validation failed',
-          details: validationErrors,
-        });
-        return;
-      }
-
-      const book = await bookService.getBookById(request.params.id);
-      if (!book) {
-        reply.code(404).send({
-          success: false,
-          error: 'Book not found',
-        } as ApiResponse<never>);
-        return;
-      }
-      reply.send({
-        success: true,
-        data: book,
-      } as ApiResponse<typeof book>);
-    } catch (error) {
-      reply.code(500).send({
-        success: false,
-        error: 'Failed to fetch book',
-      } as ApiResponse<never>);
-    }
+  async getBookById(request: FastifyRequest, reply: FastifyReply): Promise<void> {
+    const { id } = request.params as { id: string };
+    const book = await bookService.getBookById(id);
+    
+    const response: ApiSuccess<typeof book> = {
+      success: true,
+      data: book,
+      message: 'Book retrieved successfully'
+    };
+    
+    reply.status(HttpStatus.OK).send(response);
   }
 
-  async updateBook(
-    request: FastifyRequest<{ Params: { id: string }; Body: UpdateBookRequest }>,
-    reply: FastifyReply
-  ): Promise<void> {
-    try {
-      const idValidationErrors = validateId(request.params.id);
-      const bodyValidationErrors = validateUpdateBook(request.body);
-      const validationErrors = [...idValidationErrors, ...bodyValidationErrors];
-      
-      if (validationErrors.length > 0) {
-        reply.code(400).send({
-          success: false,
-          error: 'Validation failed',
-          details: validationErrors,
-        });
-        return;
-      }
-
-      if (request.body.authorId) {
-        const authorExists = await authorService.authorExists(request.body.authorId);
-        if (!authorExists) {
-          reply.code(400).send({
-            success: false,
-            error: 'Author not found',
-          } as ApiResponse<never>);
-          return;
-        }
-      }
-
-      const book = await bookService.updateBook(request.params.id, request.body);
-      reply.send({
-        success: true,
-        data: book,
-      } as ApiResponse<typeof book>);
-    } catch (error) {
-      reply.code(500).send({
-        success: false,
-        error: 'Failed to update book',
-      } as ApiResponse<never>);
-    }
+  async updateBook(request: FastifyRequest, reply: FastifyReply): Promise<void> {
+    const { id } = request.params as { id: string };
+    const book = await bookService.updateBook(id, request.body as unknown as UpdateBookRequest);
+    
+    const response: ApiSuccess<typeof book> = {
+      success: true,
+      data: book,
+      message: 'Book updated successfully'
+    };
+    
+    reply.status(HttpStatus.OK).send(response);
   }
 
-  async deleteBook(
-    request: FastifyRequest<{ Params: { id: string } }>,
-    reply: FastifyReply
-  ): Promise<void> {
-    try {
-      const validationErrors = validateId(request.params.id);
-      if (validationErrors.length > 0) {
-        reply.code(400).send({
-          success: false,
-          error: 'Validation failed',
-          details: validationErrors,
-        });
-        return;
-      }
-
-      await bookService.deleteBook(request.params.id);
-      reply.code(204).send();
-    } catch (error) {
-      reply.code(500).send({
-        success: false,
-        error: 'Failed to delete book',
-      } as ApiResponse<never>);
-    }
+  async deleteBook(request: FastifyRequest, reply: FastifyReply): Promise<void> {
+    const { id } = request.params as { id: string };
+    await bookService.deleteBook(id);
+    
+    const response = {
+      success: true,
+      message: 'Book deleted successfully'
+    };
+    
+    reply.status(HttpStatus.OK).send(response);
   }
 
-  async getBooksByAuthor(
-    request: FastifyRequest<{ Params: { id: string } }>,
-    reply: FastifyReply
-  ): Promise<void> {
-    try {
-      const validationErrors = validateId(request.params.id);
-      if (validationErrors.length > 0) {
-        reply.code(400).send({
-          success: false,
-          error: 'Validation failed',
-          details: validationErrors,
-        });
-        return;
-      }
-
-      const authorExists = await authorService.authorExists(request.params.id);
-      if (!authorExists) {
-        reply.code(404).send({
-          success: false,
-          error: 'Author not found',
-        } as ApiResponse<never>);
-        return;
-      }
-
-      const books = await bookService.getBooksByAuthorId(request.params.id);
-      reply.send({
-        success: true,
-        data: books,
-      } as ApiResponse<typeof books>);
-    } catch (error) {
-      reply.code(500).send({
-        success: false,
-        error: 'Failed to fetch books by author',
-      } as ApiResponse<never>);
-    }
+  async getBooksByAuthorId(request: FastifyRequest, reply: FastifyReply): Promise<void> {
+    const { id } = request.params as { id: string };
+    const books = await bookService.getBooksByAuthorId(id);
+    
+    const response: ApiSuccess<typeof books> = {
+      success: true,
+      data: books,
+      message: books.length === 0 
+        ? 'No books found for this author' 
+        : `Found ${books.length} book(s) by this author`
+    };
+    
+    reply.status(HttpStatus.OK).send(response);
   }
-} 
+}
+
+export const bookController = new BookController(); 

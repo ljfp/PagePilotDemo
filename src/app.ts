@@ -2,6 +2,8 @@ import Fastify from 'fastify';
 import { connectDatabase, disconnectDatabase } from './database/client.js';
 import { authorRoutes } from './routes/authorRoutes.js';
 import { bookRoutes } from './routes/bookRoutes.js';
+import { authenticationRoutes } from './routes/authenticationRoutes.js';
+import { favoriteRoutes } from './routes/favoriteRoutes.js';
 
 export async function startServer(port: number, host: string): Promise<void> {
   const server = Fastify({
@@ -35,23 +37,37 @@ export async function startServer(port: number, host: string): Promise<void> {
       tags: [
         { name: 'authors', description: 'Author management endpoints' },
         { name: 'books', description: 'Book management endpoints' },
+        { name: 'Authentication', description: 'User authentication endpoints' },
+        { name: 'Favorites', description: 'User favorite management endpoints' },
         { name: 'health', description: 'Health check endpoints' },
       ],
+      components: {
+        securitySchemes: {
+          bearerAuth: {
+            type: 'http',
+            scheme: 'bearer',
+            bearerFormat: 'JWT',
+            description: 'JWT token for authentication',
+          },
+        },
+      },
     },
   });
 
   await server.register(import('@fastify/swagger-ui'), {
     routePrefix: '/docs',
     uiConfig: {
-      docExpansion: 'full',
-      deepLinking: false,
+      docExpansion: 'list'
     },
     staticCSP: true,
-    transformStaticCSP: (header) => header,
-    transformSpecification: (swaggerObject) => {
-      return swaggerObject;
-    },
-    transformSpecificationClone: true,
+    transformStaticCSP: (header) => {
+      // Allow unsafe-inline for styles and scripts needed by Swagger UI
+      // Remove upgrade-insecure-requests for development HTTP server
+      return header
+        .replace('style-src \'self\' https:', 'style-src \'self\' https: \'unsafe-inline\'')
+        .replace('script-src \'self\'', 'script-src \'self\' \'unsafe-inline\' \'unsafe-eval\'')
+        .replace(' upgrade-insecure-requests;', ';');
+    }
   });
 
   server.get('/health', {
@@ -75,6 +91,8 @@ export async function startServer(port: number, host: string): Promise<void> {
 
   await server.register(authorRoutes);
   await server.register(bookRoutes);
+  await server.register(authenticationRoutes);
+  await server.register(favoriteRoutes);
 
   server.addHook('onClose', async () => {
     await disconnectDatabase();
