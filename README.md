@@ -41,6 +41,32 @@ npm install
 npm run db:push
 ```
 
+### Database Seeding
+
+To populate the database with sample data for development and testing:
+
+```bash
+npm run db:seed
+```
+
+This will create:
+- 10 authors (5 with 3 books each, 5 with 1 book each)
+- 20 books total
+- 10 users with hashed passwords
+- 5 users with favorite books
+
+To reset the database and reseed:
+
+```bash
+npm run db:reset
+```
+
+To verify the seeded data:
+
+```bash
+npm run db:verify
+```
+
 ### Development
 
 ```bash
@@ -150,6 +176,9 @@ prisma/              # Database schema and migrations
 - `npm run db:generate` - Generate Prisma client
 - `npm run db:push` - Push schema to database
 - `npm run db:migrate` - Run database migrations
+- `npm run db:seed` - Populate database with sample data
+- `npm run db:reset` - Reset database and reseed with sample data
+- `npm run db:verify` - Verify seeded data structure
 
 ## Tech Stack
 
