@@ -1,6 +1,7 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { AuthorService } from '../services/authorService.js';
 import { CreateAuthorRequest, UpdateAuthorRequest, ApiResponse } from '../types/index.js';
+import { validateCreateAuthor, validateUpdateAuthor, validateId } from '../utils/validation.js';
 
 const authorService = new AuthorService();
 
@@ -10,6 +11,16 @@ export class AuthorController {
     reply: FastifyReply
   ): Promise<void> {
     try {
+      const validationErrors = validateCreateAuthor(request.body);
+      if (validationErrors.length > 0) {
+        reply.code(400).send({
+          success: false,
+          error: 'Validation failed',
+          details: validationErrors,
+        });
+        return;
+      }
+
       const author = await authorService.createAuthor(request.body);
       reply.code(201).send({
         success: true,
@@ -46,6 +57,16 @@ export class AuthorController {
     reply: FastifyReply
   ): Promise<void> {
     try {
+      const validationErrors = validateId(request.params.id);
+      if (validationErrors.length > 0) {
+        reply.code(400).send({
+          success: false,
+          error: 'Validation failed',
+          details: validationErrors,
+        });
+        return;
+      }
+
       const author = await authorService.getAuthorById(request.params.id);
       if (!author) {
         reply.code(404).send({
@@ -71,6 +92,19 @@ export class AuthorController {
     reply: FastifyReply
   ): Promise<void> {
     try {
+      const idValidationErrors = validateId(request.params.id);
+      const bodyValidationErrors = validateUpdateAuthor(request.body);
+      const validationErrors = [...idValidationErrors, ...bodyValidationErrors];
+      
+      if (validationErrors.length > 0) {
+        reply.code(400).send({
+          success: false,
+          error: 'Validation failed',
+          details: validationErrors,
+        });
+        return;
+      }
+
       const author = await authorService.updateAuthor(request.params.id, request.body);
       reply.send({
         success: true,
@@ -89,6 +123,16 @@ export class AuthorController {
     reply: FastifyReply
   ): Promise<void> {
     try {
+      const validationErrors = validateId(request.params.id);
+      if (validationErrors.length > 0) {
+        reply.code(400).send({
+          success: false,
+          error: 'Validation failed',
+          details: validationErrors,
+        });
+        return;
+      }
+
       await authorService.deleteAuthor(request.params.id);
       reply.code(204).send();
     } catch (error) {

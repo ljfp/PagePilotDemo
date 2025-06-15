@@ -2,6 +2,7 @@ import { FastifyRequest, FastifyReply } from 'fastify';
 import { BookService } from '../services/bookService.js';
 import { AuthorService } from '../services/authorService.js';
 import { CreateBookRequest, UpdateBookRequest, ApiResponse } from '../types/index.js';
+import { validateCreateBook, validateUpdateBook, validateId } from '../utils/validation.js';
 
 const bookService = new BookService();
 const authorService = new AuthorService();
@@ -12,6 +13,16 @@ export class BookController {
     reply: FastifyReply
   ): Promise<void> {
     try {
+      const validationErrors = validateCreateBook(request.body);
+      if (validationErrors.length > 0) {
+        reply.code(400).send({
+          success: false,
+          error: 'Validation failed',
+          details: validationErrors,
+        });
+        return;
+      }
+
       const authorExists = await authorService.authorExists(request.body.authorId);
       if (!authorExists) {
         reply.code(400).send({
@@ -57,6 +68,16 @@ export class BookController {
     reply: FastifyReply
   ): Promise<void> {
     try {
+      const validationErrors = validateId(request.params.id);
+      if (validationErrors.length > 0) {
+        reply.code(400).send({
+          success: false,
+          error: 'Validation failed',
+          details: validationErrors,
+        });
+        return;
+      }
+
       const book = await bookService.getBookById(request.params.id);
       if (!book) {
         reply.code(404).send({
@@ -82,6 +103,19 @@ export class BookController {
     reply: FastifyReply
   ): Promise<void> {
     try {
+      const idValidationErrors = validateId(request.params.id);
+      const bodyValidationErrors = validateUpdateBook(request.body);
+      const validationErrors = [...idValidationErrors, ...bodyValidationErrors];
+      
+      if (validationErrors.length > 0) {
+        reply.code(400).send({
+          success: false,
+          error: 'Validation failed',
+          details: validationErrors,
+        });
+        return;
+      }
+
       if (request.body.authorId) {
         const authorExists = await authorService.authorExists(request.body.authorId);
         if (!authorExists) {
@@ -111,6 +145,16 @@ export class BookController {
     reply: FastifyReply
   ): Promise<void> {
     try {
+      const validationErrors = validateId(request.params.id);
+      if (validationErrors.length > 0) {
+        reply.code(400).send({
+          success: false,
+          error: 'Validation failed',
+          details: validationErrors,
+        });
+        return;
+      }
+
       await bookService.deleteBook(request.params.id);
       reply.code(204).send();
     } catch (error) {
@@ -126,6 +170,16 @@ export class BookController {
     reply: FastifyReply
   ): Promise<void> {
     try {
+      const validationErrors = validateId(request.params.id);
+      if (validationErrors.length > 0) {
+        reply.code(400).send({
+          success: false,
+          error: 'Validation failed',
+          details: validationErrors,
+        });
+        return;
+      }
+
       const authorExists = await authorService.authorExists(request.params.id);
       if (!authorExists) {
         reply.code(404).send({
