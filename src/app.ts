@@ -1,6 +1,7 @@
 import Fastify from 'fastify';
 import { connectDatabase, disconnectDatabase } from './database/client.js';
 import { authorRoutes } from './routes/authorRoutes.js';
+import { bookRoutes } from './routes/bookRoutes.js';
 
 export async function startServer(port: number, host: string): Promise<void> {
   const server = Fastify({
@@ -22,6 +23,7 @@ export async function startServer(port: number, host: string): Promise<void> {
   });
 
   await server.register(authorRoutes);
+  await server.register(bookRoutes);
 
   server.addHook('onClose', async () => {
     await disconnectDatabase();
