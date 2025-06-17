@@ -1,6 +1,6 @@
 import { describe, test, expect, beforeEach, afterEach } from 'vitest';
-import { AuthorService } from '../src/services/authorService.js';
-import { prisma } from '../src/database/client.js';
+import { AuthorService } from '../../../src/services/authorService.js';
+import { prisma } from '../../../src/database/client.js';
 
 describe('AuthorService', () => {
   const authorService = new AuthorService();
