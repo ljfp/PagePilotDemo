@@ -4,6 +4,7 @@ import { authorRoutes } from './routes/authorRoutes.js';
 import { bookRoutes } from './routes/bookRoutes.js';
 import { authenticationRoutes } from './routes/authenticationRoutes.js';
 import { favoriteRoutes } from './routes/favoriteRoutes.js';
+import { HealthResponseSchema, WelcomeResponseSchema } from './types/swagger.js';
 
 export async function startServer(port: number, host: string): Promise<void> {
   const server = Fastify({
@@ -25,8 +26,16 @@ export async function startServer(port: number, host: string): Promise<void> {
       openapi: '3.0.0',
       info: {
         title: 'PagePilot Backend API',
-        description: 'Backend service for PagePilot bookstore platform',
+        description: 'Backend service for PagePilot bookstore platform with comprehensive author and book management',
         version: '1.0.0',
+        contact: {
+          name: 'PagePilot API Support',
+          email: 'support@pagepilot.com'
+        },
+        license: {
+          name: 'MIT',
+          url: 'https://opensource.org/licenses/MIT'
+        }
       },
       servers: [
         {
@@ -35,11 +44,26 @@ export async function startServer(port: number, host: string): Promise<void> {
         },
       ],
       tags: [
-        { name: 'authors', description: 'Author management endpoints' },
-        { name: 'books', description: 'Book management endpoints' },
-        { name: 'Authentication', description: 'User authentication endpoints' },
-        { name: 'Favorites', description: 'User favorite management endpoints' },
-        { name: 'health', description: 'Health check endpoints' },
+        { 
+          name: 'authors', 
+          description: 'Author management endpoints - Create, read, update, and delete authors' 
+        },
+        { 
+          name: 'books', 
+          description: 'Book management endpoints - Create, read, update, and delete books with author relationships' 
+        },
+        { 
+          name: 'Authentication', 
+          description: 'User authentication endpoints - Register, login, and JWT token management' 
+        },
+        { 
+          name: 'Favorites', 
+          description: 'User favorite management endpoints - Add and remove book favorites' 
+        },
+        { 
+          name: 'health', 
+          description: 'Health check and API information endpoints' 
+        },
       ],
       components: {
         securitySchemes: {
@@ -47,7 +71,7 @@ export async function startServer(port: number, host: string): Promise<void> {
             type: 'http',
             scheme: 'bearer',
             bearerFormat: 'JWT',
-            description: 'JWT token for authentication',
+            description: 'JWT token for authentication. Format: Bearer <token>',
           },
         },
       },
@@ -57,7 +81,12 @@ export async function startServer(port: number, host: string): Promise<void> {
   await server.register(import('@fastify/swagger-ui'), {
     routePrefix: '/docs',
     uiConfig: {
-      docExpansion: 'list'
+      docExpansion: 'list',
+      deepLinking: true,
+      displayOperationId: true,
+      defaultModelsExpandDepth: 2,
+      defaultModelExpandDepth: 2,
+      displayRequestDuration: true
     },
     staticCSP: true,
     transformStaticCSP: (header) => {
@@ -74,15 +103,9 @@ export async function startServer(port: number, host: string): Promise<void> {
     schema: {
       tags: ['health'],
       summary: 'Health check endpoint',
-      description: 'Returns the current status of the API',
+      description: 'Returns the current status of the API server and database connectivity',
       response: {
-        200: {
-          type: 'object',
-          properties: {
-            status: { type: 'string' },
-            message: { type: 'string' },
-          },
-        },
+        200: HealthResponseSchema,
       },
     },
   }, async () => {
@@ -93,26 +116,9 @@ export async function startServer(port: number, host: string): Promise<void> {
     schema: {
       tags: ['health'],
       summary: 'API information',
-      description: 'Returns basic information about the PagePilot API',
+      description: 'Returns basic information about the PagePilot API including service details and version',
       response: {
-        200: {
-          description: 'API information retrieved successfully',
-          type: 'object',
-          properties: {
-            success: { type: 'boolean', enum: [true] },
-            data: {
-              type: 'object',
-              properties: {
-                service: { type: 'string' },
-                version: { type: 'string' },
-                description: { type: 'string' }
-              },
-              required: ['service', 'version', 'description']
-            },
-            message: { type: 'string' }
-          },
-          required: ['success', 'data', 'message']
-        }
+        200: WelcomeResponseSchema
       }
     }
   }, async () => {

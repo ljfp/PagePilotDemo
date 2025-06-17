@@ -227,7 +227,7 @@ export class FavoriteService {
       const favoritesByYear: Record<string, number> = {};
       const favoritesByAuthor: Record<string, number> = {};
 
-      favorites.forEach(favorite => {
+      favorites.forEach((favorite: FavoriteWithBook) => {
         const year = favorite.book.publicationYear.toString();
         const authorName = favorite.book.author.name;
 
